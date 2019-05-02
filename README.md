@@ -1,5 +1,5 @@
 # tdscript
-*Ce projet a été réalisé en suivant les consignes du TD scripting [https://gitlab.com/alsim/linux1/blob/master/TD-scripting.md](ici)*
+*Ce projet a été réalisé en suivant les consignes du TD scripting [ici](https://gitlab.com/alsim/linux1/blob/master/TD-scripting.md)*
 Tous les scripts sont en bash
 
 ## moreorless
@@ -32,3 +32,5 @@ Il a été testé ainsi :
 * Pas d'entrée
 * Mauvaise url
 * Dossier youtube-dl-musics inexistant
+
+*Pour exécuter : `./youtube-dl url`*
