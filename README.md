@@ -1,6 +1,7 @@
 # tdscript
 *Ce projet a été réalisé en suivant les consignes du TD scripting [ici](https://gitlab.com/alsim/linux1/blob/master/TD-scripting.md)*
 Tous les scripts sont en bash
+N'oubliez pas de chmod +x les fichiers pour les rendre exécutables !
 
 ## moreorless
 C'est le jeu du plus ou moins : le script génère un nombre aléatoire entre 0 et 1000 à chaque exécution. Ensuite, tant que le nombre n'est pas trouvé, le joueur doit entrer un nombre, et le script répondra soit plus, soit moins.
