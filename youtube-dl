@@ -1,0 +1,35 @@
+#!/bin/bash
+
+checkdir() {
+	if ! [ -d "${HOME}/youtube-dl-musics" ] || [ -L "${HOME}/youtube-dl-musics" ] ; then 
+		mkdir "${HOME}/youtube-dl-musics"
+	fi
+}
+
+movemusic() {
+	checkdir
+	cp "$1" "${HOME}/youtube-dl-musics/${2}"
+	rm "$1"	
+	echo "You have downloaded ${2}"
+}
+
+findfile() {
+	test=$(youtube-dl -x $1 2>&1)
+	if ! [ $? -eq 1 ] ; then
+		url=$(echo $1 | cut -d '=' -f 2)
+		name=$(find * | grep $url)
+		defname=$(echo $name | sed "s/-${url}//g")
+		movemusic "$name" "$defname"
+	else
+		echo "This is not a valid video."
+		exit 1
+	fi
+}
+
+if [ -z $1 ]; then
+	echo "Please enter a valid url"
+	exit 1
+else
+	findfile $1
+	exit 0
+fi	

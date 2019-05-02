@@ -1,0 +1,93 @@
+#!/bin/bash
+
+onlynewers() {
+	tar dvf $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar > dvf
+	find $1 > finded
+	if [ $? -eq 1 ]; then
+		exit 1
+	else
+		sed -i -e "s/\/$//g" dvf
+		touch news
+
+		while read p; do
+			if grep -q "^$p$" dvf
+			then
+				:
+			else
+				echo "$p" >> news
+			fi	
+		done <finded
+		echo "Starting adding files"
+		while read p; do
+			echo "The file ${p} has been added"
+			tar uf $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar "$p"
+		done <news
+		echo "End"	
+		rm finded
+		rm news
+	fi
+	rm dvf
+	exit 0
+}
+
+allmodif() {
+	find $1 -type f -cmin -$((24 * 60)) > finded
+	if [ $? -eq 1 ]; then
+		exit 1
+	else
+		while read p; do
+			echo "The file ${p} has been added"
+			tar uf $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar "$p"
+		done <finded
+	fi
+	rm finded
+	exit 0
+}
+
+backup() {
+	if ! [ -d "${HOME}/backups" ] || [ -L "${HOME}/backups" ]; then
+		mkdir "${HOME}/backups"
+	fi
+	if [ "$(date +%a)" = "Fri" ] || [ "$(date +%A)" = "vendredi" ]; then
+		tar cf $HOME/backups/$(date +%Y-%m-%d).tar "$1"
+		if [ $? -eq 1 ]; then
+			exit 1
+		else
+			echo "The backup file $(date +%Y-%m-%d).tar has been created"
+		fi
+	else
+		tar cf $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar "$1"
+		if [ $? -eq 1 ]; then
+			exit 1
+		else
+			echo "The backup file $(date --date="last Fri" +%Y-%m-%d).tar has been created"
+		fi
+	fi
+	exit 0	
+}
+
+
+echo "If you don't have a backup for the last friday, this will create one named with this date"
+echo -e "Backups are stored in the backups folder in your home directory\n"
+
+if [ -z $1 ]; then
+	echo "Please enter a valid path to backup"
+	exit 1
+else
+	if [ "$(date +%a)" = "Fri" ] || [ "$(date +%A)" = "vendredi" ] || ! [ -f $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar ]; then
+		backup "$1"
+	else
+		echo "Choose your option : 1 to backup only new files, 2 to backup everything modified within the last 24 hours"
+		read opt
+		if [[ $opt =~ ^[1-2]$ ]]; then
+			if [ $opt -eq 1 ]; then
+				onlynewers "$1"
+			elif [ $opt -eq 2 ]; then
+				allmodif "$1"
+			fi
+		else
+			echo "Please try again."
+			exit 1
+		fi
+	fi
+fi

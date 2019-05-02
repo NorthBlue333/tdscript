@@ -1,0 +1,30 @@
+#!/bin/bash
+
+number=$(($RANDOM%1000))
+	i=0
+
+	testnumb(){
+	i=$(($i+1))
+	echo "Try with a number :"
+	read tempnumb
+	if ! [[ $tempnumb =~ ^[0-9]+$ ]]
+		then
+		echo "Please enter a valid input"
+		testnumb
+	else 
+		if test $tempnumb -eq $number
+			then
+			echo "You won ! The number was" $number "in" $i "tries."
+		elif test $tempnumb -lt $number
+			then
+			echo "It's more than that."
+			testnumb
+		else
+			echo "It's less than that."
+			testnumb
+		fi
+	fi
+}
+
+testnumb
+exit 0
