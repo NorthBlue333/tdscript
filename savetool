@@ -7,6 +7,7 @@ onlynewers() {
 		exit 1
 	else
 		sed -i -e "s/\/$//g" dvf
+		sed -i -e "s/\/$//g" finded
 		touch news
 
 		while read p; do
@@ -14,15 +15,18 @@ onlynewers() {
 			then
 				:
 			else
+				echo $p
 				echo "$p" >> news
 			fi	
 		done <finded
 		echo "Starting adding files"
+		i=0
 		while read p; do
+			i=$((i + 1))
 			echo "The file ${p} has been added"
-			tar uf $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar "$p"
+			tar rf $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar "$p"
 		done <news
-		echo "End"	
+		echo "End, ${i} file(s) added."	
 		rm finded
 		rm news
 	fi
@@ -31,14 +35,25 @@ onlynewers() {
 }
 
 allmodif() {
+	tar dvf $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar > dvf
 	find $1 -type f -cmin -$((24 * 60)) > finded
 	if [ $? -eq 1 ]; then
 		exit 1
 	else
+		sed -i -e "s/\/$//g" dvf
+		sed -i -e "s/\/$//g" finded
+		echo "Starting adding files"
+		i=0
 		while read p; do
+			i=$((i + 1))
+			if grep -q "^$p$" dvf
+			then
+				tar -f $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar --delete "$p"
+			fi
 			echo "The file ${p} has been added"
-			tar uf $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar "$p"
+			tar rf $HOME/backups/$(date --date="last Fri" +%Y-%m-%d).tar "$p"
 		done <finded
+		echo "End, ${i} file(s) added."
 	fi
 	rm finded
 	exit 0
